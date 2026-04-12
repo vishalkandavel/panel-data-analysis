@@ -1,0 +1,14 @@
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Stata files
+*.dta
+*.gph
+*.smcl
+
+# OS files
+.DS_Store
+Thumbs.db
