@@ -1,6 +1,12 @@
 clear all
 set more off
+
+capture log close
+log using "EKC.log", replace text
+
+
 cd .
+
 import excel "EKC_Data.xlsx", firstrow clear
 
 drop I-AA
@@ -37,21 +43,29 @@ gen log_gdp_sq_c = log_gdp_c^2
 
 xtsum pm25 gdp vehicles electricity factories forestcover
 xtsum log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest
+summarize log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest
 
-xtreg log_pm25 log_gdp log_gdp_sq log_vehicles log_electricity log_factories log_forest, fe vce(cluster state_id)
-
-xtreg log_pm25 log_gdp log_gdp_sq log_vehicles log_electricity log_factories log_forest, fe
+xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest, fe
 estimates store fixed
 
-xtreg log_pm25 log_gdp log_gdp_sq log_vehicles log_electricity log_factories log_forest, re
+xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest, re
 estimates store random
 
-hausman fixed random
+hausman fixed random, sigmamore
+xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest , fe vce(cluster state_id)
+xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest i.year, fe vce(cluster state_id)
 
 corr log_gdp_c log_gdp_sq_c
+
+xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest, fe
+xttest3
 
 predict resid, e
 histogram resid
 sktest resid
 
-xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest i.year, fe vce(cluster state_id)
+reg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories log_forest i.year
+vif
+
+linktest
+log close 
