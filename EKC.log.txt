@@ -1,0 +1,501 @@
+---------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  D:\BITS Hyd\3-2\AE\assign_2\EKC.log
+  log type:  text
+ opened on:  15 Apr 2026, 23:37:29
+
+. 
+. 
+. cd "D:\BITS Hyd\3-2\AE\assign_2"
+D:\BITS Hyd\3-2\AE\assign_2
+
+. 
+. import excel "EKC_Data.xlsx", firstrow clear
+(27 vars, 737 obs)
+
+. 
+. drop I-AA
+
+. 
+. rename State state
+
+. rename Year year
+
+. rename PM25 pm25
+
+. rename GDP gdp
+
+. rename Vechiles vehicles
+
+. rename Electricity electricity
+
+. rename Factories factories
+
+. rename ForestCover forestcover
+
+. 
+. destring electricity, replace force
+electricity: all characters numeric; replaced as int
+(203 missing values generated)
+
+. destring forestcover, replace force 
+forestcover: contains nonnumeric characters; replaced as long
+(202 missing values generated)
+
+. 
+. keep if year >= 2004 & year <= 2020
+(193 observations deleted)
+
+. drop if state == "Andhra Pradesh"
+(17 observations deleted)
+
+. drop if state == "Telangana"
+(17 observations deleted)
+
+. 
+. encode state, gen(state_id)
+
+. xtset state_id year 
+
+Panel variable: state_id (strongly balanced)
+ Time variable: year, 2004.00 to 2020.00
+         Delta: 1 unit
+
+. 
+. gen log_pm25 = log(pm25)
+
+. gen log_gdp = log(gdp)
+
+. gen log_vehicles = log(vehicles)
+
+. gen log_electricity = log(electricity)
+
+. gen log_factories = log(factories)
+(30 missing values generated)
+
+. gen log_forest = log(forestcover)
+
+. 
+. summarize log_gdp
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     log_gdp |        510    11.17054    .5878678   9.437592   12.65706
+
+. gen log_gdp_c = log_gdp - r(mean)
+
+. gen log_gdp_sq_c = log_gdp_c^2
+
+. 
+. xtsum pm25 gdp vehicles electricity factories forestcover
+
+Variable         |      Mean   Std. dev.       Min        Max |    Observations
+-----------------+--------------------------------------------+----------------
+pm25     overall |  43.75591   23.85541   12.29484     129.69 |     N =     510
+         between |             23.97376   13.63569   113.8765 |     n =      30
+         within  |             3.522176   25.48344   59.56944 |     T =      17
+                 |                                            |
+gdp      overall |  84556.49   53949.74   12551.45     313973 |     N =     510
+         between |             47190.25   21274.86   233938.3 |     n =      30
+         within  |             27452.79   -12877.6   178356.2 |     T =      17
+                 |                                            |
+vehicles overall |  5301.637   7039.103         17      37786 |     N =     510
+         between |             6144.974   37.58824   21001.41 |     n =      30
+         within  |             3602.116  -6730.775   22742.17 |     T =      17
+                 |                                            |
+electr~y overall |  2833.547   3466.248         16      15830 |     N =     510
+         between |             3377.941   26.41176   13041.82 |     n =      30
+         within  |             981.3616  -936.2765   6339.488 |     T =      17
+                 |                                            |
+factor~s overall |  5776.227   8143.525          0      39393 |     N =     510
+         between |              8006.35   16.35294   32625.35 |     n =      30
+         within  |             2056.781  -5807.125   13995.29 |     T =      17
+                 |                                            |
+forest~r overall |  21670.15   19767.99         40      77739 |     N =     510
+         between |             20075.05   49.41176   77517.35 |     n =      30
+         within  |             658.7693   18084.51   24443.86 |     T =      17
+
+. xtsum log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factorie
+> s log_forest
+
+Variable         |      Mean   Std. dev.       Min        Max |    Observations
+-----------------+--------------------------------------------+----------------
+log_pm25 overall |  3.640282   .5276876    2.50918   4.865147 |     N =     510
+         between |             .5314915   2.609705   4.731974 |     n =      30
+         within  |             .0696457   3.430741   3.884517 |     T =      17
+                 |                                            |
+log_~p_c overall | -4.75e-09   .5878678  -1.732951    1.48652 |     N =     510
+         between |             .5243842  -1.239853   1.162108 |     n =      30
+         within  |               .28152  -.8753938   .6492606 |     T =      17
+                 |                                            |
+log_~q_c overall |   .344911   .4649714   1.18e-07   3.003119 |     N =     510
+         between |             .3764657    .055698   1.609723 |     n =      30
+         within  |             .2809397  -.5107874   1.738306 |     T =      17
+                 |                                            |
+log_ve~s overall |  7.379499   1.895457   2.833213   10.53969 |     N =     510
+         between |             1.852062   3.564514   9.855742 |     n =      30
+         within  |             .5200452   5.959184   8.627901 |     T =      17
+                 |                                            |
+log_el~y overall |  6.762761    1.91654   2.772589   9.669662 |     N =     510
+         between |              1.92534   3.260864   9.465824 |     n =      30
+         within  |             .2876052   5.623333   7.605939 |     T =      17
+                 |                                            |
+log_fa~s overall |  7.561759   1.916883   2.484907   10.58134 |     N =     480
+         between |             1.973146   2.769379   10.36597 |     n =      30
+         within  |             .2720419   6.483018   8.146172 | T-bar =      16
+                 |                                            |
+log_fo~t overall |  9.301663   1.617044   3.688879   11.26111 |     N =     510
+         between |             1.642507   3.894759   11.25825 |     n =      30
+         within  |             .0424982   9.078339   9.455394 |     T =      17
+
+. summarize log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_fact
+> ories log_forest
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+    log_pm25 |        510    3.640282    .5276876    2.50918   4.865147
+   log_gdp_c |        510   -4.75e-09    .5878678  -1.732951    1.48652
+log_gdp_sq_c |        510     .344911    .4649714   1.18e-07   3.003119
+log_vehicles |        510    7.379499    1.895457   2.833213   10.53969
+log_electr~y |        510    6.762761     1.91654   2.772589   9.669662
+-------------+---------------------------------------------------------
+log_factor~s |        480    7.561759    1.916883   2.484907   10.58134
+  log_forest |        510    9.301663    1.617044   3.688879   11.26111
+
+. 
+. xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factorie
+> s log_forest, fe
+
+Fixed-effects (within) regression               Number of obs     =        480
+Group variable: state_id                        Number of groups  =         30
+
+R-squared:                                      Obs per group:
+     Within  = 0.3077                                         min =          2
+     Between = 0.3083                                         avg =       16.0
+     Overall = 0.2106                                         max =         17
+
+                                                F(6,444)          =      32.88
+corr(u_i, Xb) = -0.5880                         Prob > F          =     0.0000
+
+--------------------------------------------------------------------------------
+      log_pm25 | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+     log_gdp_c |   .1422167   .0347906     4.09   0.000      .073842    .2105915
+  log_gdp_sq_c |  -.0428869   .0121449    -3.53   0.000    -.0667555   -.0190182
+  log_vehicles |   .0055997   .0182452     0.31   0.759    -.0302581    .0414574
+log_electric~y |  -.0362657   .0289558    -1.25   0.211    -.0931732    .0206417
+ log_factories |    .026166   .0195201     1.34   0.181    -.0121972    .0645293
+    log_forest |   .0495852   .0733569     0.68   0.499    -.0945848    .1937551
+         _cons |     3.2314   .6977145     4.63   0.000     1.860167    4.602634
+---------------+----------------------------------------------------------------
+       sigma_u |  .58942241
+       sigma_e |  .06010738
+           rho |  .98970777   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------
+F test that all u_i=0: F(29, 444) = 622.38                   Prob > F = 0.0000
+
+. estimates store fixed
+
+. 
+. xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factorie
+> s log_forest, re
+
+Random-effects GLS regression                   Number of obs     =        480
+Group variable: state_id                        Number of groups  =         30
+
+R-squared:                                      Obs per group:
+     Within  = 0.2977                                         min =          2
+     Between = 0.1943                                         avg =       16.0
+     Overall = 0.1669                                         max =         17
+
+                                                Wald chi2(6)      =     191.63
+corr(u_i, X) = 0 (assumed)                      Prob > chi2       =     0.0000
+
+--------------------------------------------------------------------------------
+      log_pm25 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+     log_gdp_c |   .0736991   .0301761     2.44   0.015      .014555    .1328432
+  log_gdp_sq_c |  -.0260506   .0116308    -2.24   0.025    -.0488466   -.0032546
+  log_vehicles |   .0242907    .017927     1.35   0.175    -.0108455     .059427
+log_electric~y |   .0046368   .0270323     0.17   0.864    -.0483456    .0576191
+ log_factories |   .0292852   .0189468     1.55   0.122    -.0078499    .0664202
+    log_forest |  -.0543624   .0405194    -1.34   0.180     -.133779    .0250542
+         _cons |   3.722506   .3963228     9.39   0.000     2.945728    4.499285
+---------------+----------------------------------------------------------------
+       sigma_u |  .41210592
+       sigma_e |  .06010738
+           rho |  .97916968   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------
+
+. estimates store random
+
+. 
+. hausman fixed random, sigmamore
+
+                 ---- Coefficients ----
+             |      (b)          (B)            (b-B)     sqrt(diag(V_b-V_B))
+             |     fixed        random       Difference       Std. err.
+-------------+----------------------------------------------------------------
+   log_gdp_c |    .1422167     .0736991        .0685177        .0185938
+log_gdp_sq_c |   -.0428869    -.0260506       -.0168363        .0042215
+log_vehicles |    .0055997     .0242907       -.0186911        .0049139
+log_electr~y |   -.0362657     .0046368       -.0409025        .0118117
+log_factor~s |     .026166     .0292852       -.0031191        .0060427
+  log_forest |    .0495852    -.0543624        .1039476        .0627986
+------------------------------------------------------------------------------
+                          b = Consistent under H0 and Ha; obtained from xtreg.
+           B = Inconsistent under Ha, efficient under H0; obtained from xtreg.
+
+Test of H0: Difference in coefficients not systematic
+
+    chi2(6) = (b-B)'[(V_b-V_B)^(-1)](b-B)
+            =  23.09
+Prob > chi2 = 0.0008
+
+. xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factorie
+> s log_forest , fe vce(cluster state_id)
+
+Fixed-effects (within) regression               Number of obs     =        480
+Group variable: state_id                        Number of groups  =         30
+
+R-squared:                                      Obs per group:
+     Within  = 0.3077                                         min =          2
+     Between = 0.3083                                         avg =       16.0
+     Overall = 0.2106                                         max =         17
+
+                                                F(6,29)           =      22.05
+corr(u_i, Xb) = -0.5880                         Prob > F          =     0.0000
+
+                                (Std. err. adjusted for 30 clusters in state_id)
+--------------------------------------------------------------------------------
+               |               Robust
+      log_pm25 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+     log_gdp_c |   .1422167   .0402731     3.53   0.001     .0598491    .2245844
+  log_gdp_sq_c |  -.0428869   .0181158    -2.37   0.025    -.0799379   -.0058358
+  log_vehicles |   .0055997    .017866     0.31   0.756    -.0309404    .0421397
+log_electric~y |  -.0362657   .0334024    -1.09   0.287    -.1045812    .0320498
+ log_factories |    .026166   .0235485     1.11   0.276     -.021996    .0743281
+    log_forest |   .0495852   .1015722     0.49   0.629    -.1581532    .2573236
+         _cons |     3.2314   .9511882     3.40   0.002     1.286002    5.176799
+---------------+----------------------------------------------------------------
+       sigma_u |  .58942241
+       sigma_e |  .06010738
+           rho |  .98970777   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------
+
+. xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factorie
+> s log_forest i.year, fe vce(cluster state_id)
+
+Fixed-effects (within) regression               Number of obs     =        480
+Group variable: state_id                        Number of groups  =         30
+
+R-squared:                                      Obs per group:
+     Within  = 0.4690                                         min =          2
+     Between = 0.4590                                         avg =       16.0
+     Overall = 0.2337                                         max =         17
+
+                                                F(22,29)          =      42.89
+corr(u_i, Xb) = -0.5898                         Prob > F          =     0.0000
+
+                                (Std. err. adjusted for 30 clusters in state_id)
+--------------------------------------------------------------------------------
+               |               Robust
+      log_pm25 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+     log_gdp_c |   .0465831   .0494972     0.94   0.354    -.0546501    .1478162
+  log_gdp_sq_c |   -.024155   .0157512    -1.53   0.136    -.0563698    .0080598
+  log_vehicles |   .0146608   .0292237     0.50   0.620    -.0451083      .07443
+log_electric~y |  -.0440214   .0310868    -1.42   0.167    -.1076011    .0195583
+ log_factories |   .0066692   .0230073     0.29   0.774    -.0403861    .0537244
+    log_forest |   .0354464   .1230279     0.29   0.775    -.2161739    .2870667
+               |
+          year |
+         2005  |   -.027131   .0138072    -1.96   0.059    -.0553698    .0011079
+         2006  |   .0104658   .0174322     0.60   0.553    -.0251871    .0461187
+         2007  |   .0290649   .0178345     1.63   0.114    -.0074107    .0655404
+         2008  |   .0718654   .0213456     3.37   0.002     .0282086    .1155221
+         2009  |   .0863668   .0246512     3.50   0.002     .0359495    .1367841
+         2010  |   .0465995   .0257831     1.81   0.081    -.0061327    .0993318
+         2011  |    .104882   .0309613     3.39   0.002     .0415591     .168205
+         2012  |   .1042493   .0289126     3.61   0.001     .0451163    .1633823
+         2013  |    .061761   .0333152     1.85   0.074    -.0063761    .1298982
+         2014  |   .0939359   .0343966     2.73   0.011     .0235869    .1642848
+         2015  |   .0620186   .0368402     1.68   0.103    -.0133281    .1373653
+         2016  |   .0989575   .0405915     2.44   0.021     .0159385    .1819764
+         2017  |   .0705609   .0442992     1.59   0.122    -.0200411    .1611629
+         2018  |   .1282536   .0441903     2.90   0.007     .0378744    .2186329
+         2019  |   .0603856   .0474999     1.27   0.214    -.0367626    .1575337
+         2020  |   .0771028   .0505746     1.52   0.138    -.0263339    .1805396
+               |
+         _cons |   3.424479   1.176239     2.91   0.007       1.0188    5.830158
+---------------+----------------------------------------------------------------
+       sigma_u |   .5838376
+       sigma_e |  .05361485
+           rho |  .99163744   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------
+
+. 
+. corr log_gdp_c log_gdp_sq_c
+(obs=510)
+
+             | log_~p_c log_~q_c
+-------------+------------------
+   log_gdp_c |   1.0000
+log_gdp_sq_c |   0.0795   1.0000
+
+
+. 
+. xtreg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factorie
+> s log_forest, fe
+
+Fixed-effects (within) regression               Number of obs     =        480
+Group variable: state_id                        Number of groups  =         30
+
+R-squared:                                      Obs per group:
+     Within  = 0.3077                                         min =          2
+     Between = 0.3083                                         avg =       16.0
+     Overall = 0.2106                                         max =         17
+
+                                                F(6,444)          =      32.88
+corr(u_i, Xb) = -0.5880                         Prob > F          =     0.0000
+
+--------------------------------------------------------------------------------
+      log_pm25 | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+     log_gdp_c |   .1422167   .0347906     4.09   0.000      .073842    .2105915
+  log_gdp_sq_c |  -.0428869   .0121449    -3.53   0.000    -.0667555   -.0190182
+  log_vehicles |   .0055997   .0182452     0.31   0.759    -.0302581    .0414574
+log_electric~y |  -.0362657   .0289558    -1.25   0.211    -.0931732    .0206417
+ log_factories |    .026166   .0195201     1.34   0.181    -.0121972    .0645293
+    log_forest |   .0495852   .0733569     0.68   0.499    -.0945848    .1937551
+         _cons |     3.2314   .6977145     4.63   0.000     1.860167    4.602634
+---------------+----------------------------------------------------------------
+       sigma_u |  .58942241
+       sigma_e |  .06010738
+           rho |  .98970777   (fraction of variance due to u_i)
+--------------------------------------------------------------------------------
+F test that all u_i=0: F(29, 444) = 622.38                   Prob > F = 0.0000
+
+. xttest3
+
+Modified Wald test for groupwise heteroskedasticity
+in fixed effect regression model
+
+H0: sigma(i)^2 = sigma^2 for all i
+
+chi2 (30)  =         147.04
+Prob > chi2 =          0.0000
+
+
+. 
+. predict resid, e
+(30 missing values generated)
+
+. histogram resid
+(bin=21, start=-.14979626, width=.01750659)
+
+. sktest resid
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+       resid |       480         0.1098         0.0580          6.15     0.0462
+
+. 
+. reg log_pm25 log_gdp_c log_gdp_sq_c log_vehicles log_electricity log_factories 
+> log_forest i.year
+
+      Source |       SS           df       MS      Number of obs   =       480
+-------------+----------------------------------   F(22, 457)      =     23.51
+       Model |  69.5216576        22  3.16007534   Prob > F        =    0.0000
+    Residual |  61.4264795       457  .134412428   R-squared       =    0.5309
+-------------+----------------------------------   Adj R-squared   =    0.5083
+       Total |  130.948137       479  .273378157   Root MSE        =    .36662
+
+--------------------------------------------------------------------------------
+      log_pm25 | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+     log_gdp_c |  -.4555731   .0359444   -12.67   0.000    -.5262099   -.3849363
+  log_gdp_sq_c |   .1950968   .0376376     5.18   0.000     .1211326     .269061
+  log_vehicles |  -.0349748   .0412242    -0.85   0.397    -.1159873    .0460377
+log_electric~y |   .1740911   .0398718     4.37   0.000     .0957363    .2524459
+ log_factories |   .0172612   .0321253     0.54   0.591    -.0458704    .0803928
+    log_forest |  -.1720762   .0126182   -13.64   0.000    -.1968732   -.1472792
+               |
+          year |
+         2005  |    .001138   .0998651     0.01   0.991    -.1951137    .1973898
+         2006  |   .0788264   .1001157     0.79   0.431    -.1179179    .2755706
+         2007  |   .1250578   .1004448     1.25   0.214    -.0723331    .3224487
+         2008  |   .1958667   .1008499     1.94   0.053    -.0023202    .3940537
+         2009  |   .2524401   .1004018     2.51   0.012     .0551335    .4497466
+         2010  |   .2441224   .1007781     2.42   0.016     .0460764    .4421684
+         2011  |   .3205824   .1014504     3.16   0.002     .1212153    .5199494
+         2012  |    .328433   .1019926     3.22   0.001     .1280003    .5288657
+         2013  |    .310116   .1029659     3.01   0.003     .1077707    .5124613
+         2014  |   .3386976   .1027014     3.30   0.001      .136872    .5405232
+         2015  |   .3236627   .1036064     3.12   0.002     .1200586    .5272668
+         2016  |   .3900491   .1053438     3.70   0.000     .1830309    .5970674
+         2017  |   .3730803   .1064345     3.51   0.001     .1639186     .582242
+         2018  |   .4417302   .1071829     4.12   0.000     .2310977    .6523627
+         2019  |   .4078597    .107661     3.79   0.000     .1962877    .6194316
+         2020  |   .4039289   .1080641     3.74   0.000     .1915648     .616293
+               |
+         _cons |   3.841109   .1461982    26.27   0.000     3.553805    4.128413
+--------------------------------------------------------------------------------
+
+. vif
+
+    Variable |       VIF       1/VIF  
+-------------+----------------------
+   log_gdp_c |      1.67    0.600597
+log_gdp_sq_c |      1.13    0.882322
+log_vehicles |     18.25    0.054782
+log_electr~y |     18.19    0.054966
+log_factor~s |     13.51    0.073998
+  log_forest |      1.52    0.656657
+        year |
+       2005  |      1.89    0.528922
+       2006  |      1.90    0.526277
+       2007  |      1.91    0.522834
+       2008  |      1.93    0.518642
+       2009  |      1.98    0.505709
+       2010  |      1.99    0.501940
+       2011  |      2.02    0.495310
+       2012  |      2.04    0.490057
+       2013  |      2.08    0.480836
+       2014  |      2.14    0.467685
+       2015  |      2.18    0.459550
+       2016  |      2.25    0.444517
+       2017  |      2.30    0.435453
+       2018  |      2.33    0.429393
+       2019  |      2.43    0.412316
+       2020  |      2.44    0.409246
+-------------+----------------------
+    Mean VIF |      4.00
+
+. 
+. linktest
+
+      Source |       SS           df       MS      Number of obs   =       480
+-------------+----------------------------------   F(2, 477)       =    271.19
+       Model |  69.6729384         2  34.8364692   Prob > F        =    0.0000
+    Residual |  61.2751987       477  .128459536   R-squared       =    0.5321
+-------------+----------------------------------   Adj R-squared   =    0.5301
+       Total |  130.948137       479  .273378157   Root MSE        =    .35841
+
+------------------------------------------------------------------------------
+    log_pm25 | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        _hat |   1.653561   .6037851     2.74   0.006      .467154    2.839969
+      _hatsq |  -.0875448   .0806721    -1.09   0.278    -.2460614    .0709717
+       _cons |  -1.206685    1.12317    -1.07   0.283    -3.413658    1.000287
+------------------------------------------------------------------------------
+
+. log close 
+      name:  <unnamed>
+       log:  D:\BITS Hyd\3-2\AE\assign_2\EKC.log
+  log type:  text
+ closed on:  15 Apr 2026, 23:37:31
+---------------------------------------------------------------------------------
